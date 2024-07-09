@@ -28,7 +28,7 @@
 ## Integrantes do grupo
 
 Gabriel Silva Ferreira - RA: 123123456 <br>
-Thiago Inouye Miyazaki - RA: 123456789
+Thiago Inouye Miyazaki - RA: 221150196
 
 ## Sobre o FFmpeg
 Para o nosso projeto escolhemos tentar otimizar um aplicativo/biblioteca chamado FFmpeg, que é composto de um conjunto de vários outros aplicativos e bibliotecas utilizadas na manipulação e conversão de arquivos de áudio e vídeo.<br>
