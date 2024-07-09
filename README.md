@@ -227,7 +227,7 @@ $ kcachegrind callgrind.out.82686
 
 ![alt text](image-2.png)
 
-- O interessante é que esta visualização nos dá uma noção da quantidade de tempo gasta em cada função, mas nos dá a capacidade de discernir a diferença entre a quantidade de tempo que uma função gasta porque ela **chama outras funções**, e a quantidade de tempo que uma função gasta **executando suas próprias instruções**.
+- O interessante é que esta visualização nos dá uma noção da quantidade de tempo gasta em cada função, e também nos dá a capacidade de discernir a diferença entre a quantidade de tempo que uma função gasta porque ela **chama outras funções**, e a quantidade de tempo que uma função gasta **executando suas próprias instruções**.
 - Esta distinção é importante, porque como podemos ver na imagem acima, embora funções como `encoder_thread` e `frame_encode` apareçam com valores altos, na verdade muito do processamento é gasto em outras funções que são chamadas por elas. Logo, é interessante nos concentrarmos na coluna `self` da tabela mostrada pelo `kcachegrind`.
 - Podemos alterar a ordem de exibição dos itens na tabela e teremos o seguinte:
 
