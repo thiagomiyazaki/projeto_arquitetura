@@ -65,7 +65,7 @@ $ make -j2
 
 ## Download da ferramenta perf e do valgrind
 
-- Faça o download da ferramenta `valgrind` e do `perf` através do repositório da sua distribuição. Os pacotes e bibliotecas podem variar de acordo com a distribuição e a própria versão do kernel da distribuição. Ela será utilizada para fazer o **profiling** de **tempo de execução do programa**.
+- Faça o download da ferramenta `valgrind` e do `perf` através do repositório da sua distribuição. Para o `perf`, os pacotes e bibliotecas podem variar de acordo com a distribuição, o processador, e a versão do kernel utilizada. O `perf` será utilizado para fazer o **profiling** de **tempo de execução do programa**.
 
 ```bash
 # o penúltimo pacote precisa ser baixado com a versão correta do kernel
