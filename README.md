@@ -27,8 +27,9 @@ Thiago Inouye Miyazaki - RA: 123456789
 
 ## Sobre o FFmpeg
 Para o nosso projeto escolhemos tentar otimizar um aplicativo/biblioteca chamado FFmpeg, que é composto de um conjunto de vários outros aplicativos e bibliotecas utilizadas na manipulação e conversão de arquivos de áudio e vídeo.<br>
-O FFmpeg é amplamente utilizado no meio audiovisual para fazer transcoding, edições básicas, scaling, pós-produção, conversão e padronização de áudio e vídeo, sendo conhecido pela sua alta performance, vasta quantidade de codecs suportados e desempenho veloz.<br>
-As funcionalidades do FFmpeg são empregadas em aplicativos como VLC e Youtube.<br>
+
+O FFmpeg é amplamente utilizado no meio audiovisual para fazer transcoding, edições básicas, scaling, pós-produção, conversão e padronização de áudio e vídeo, sendo conhecido pela sua alta performance, vasta quantidade de codecs suportados e desempenho veloz, e suas funcionalidades são empregadas em aplicativos como VLC e Youtube.<br>
+
 Além disso, o FFmpeg é um aplicativo gratuito e open-source.
 
 ## Escopo do projeto
