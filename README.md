@@ -306,7 +306,7 @@ $ cat zeroing_perf.txt
 
 ## Loop Unrolling e Common Subexpression Elimination
 
-O **Loop Unrolling** visa reduzir a quantidade de loops, assim reduzindo a quantidade de *branchings* e de possíveis *branch penalties*. É uma técnica que pode ser muito eficiente se utilizada da forma correta. É uma técnica que troca a complexidade de espaço pela complexidade, visto que o código torna-se maior e mais "verboso", porém com desempenho mais otimizado.
+O **Loop Unrolling** visa reduzir a quantidade de loops, assim reduzindo a quantidade de *branchings* e de possíveis *branch penalties*. É uma técnica que aumenta a complexidade de espaço para diminuir a complexidade de tempo, visto que o código torna-se maior e mais "verboso", porém com desempenho mais otimizado. O Loop Unrolling pode ser muito eficiente se utilizado da forma correta. 
 
 O **Common Subexpression Elimination** é uma técnica que visa eliminar cálculos redundantes, reutilizando valores já calculados ou valores que já foram trazidos da memória, por exemplo, para que acessos desnecessários à memória não sejam feitos.
 
