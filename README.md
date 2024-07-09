@@ -9,6 +9,16 @@
 * [Compilando o FFmpeg](#compilando-o-ffmpeg)
 * [Download da ferramenta perf e do valgrind](#download-da-ferramenta-perf-e-do-valgrind)
 * [Fazendo o profiling do FFmpeg em seu estado original](#fazendo-o-profiling-do-ffmpeg-em-seu-estado-original)
+  - [perf stat -o](#perf-stat--o)
+  - [Profiling mais detalhado com o perf](#profiling-mais-detalhado-com-o-perf)
+  - [Profiling com valgrind](#profiling-com-valgrind)
+* [Tentativas de Otimização](#tentativas-de-otimização)
+  - [Zerando registradores](#zerando-registradores)
+  - [Loop Unrolling e Common Subexpression Elimination](#loop-unrolling-e-common-subexpression-elimination)
+    - [CSE](#cse)
+    - [Loop Unrolling](#loop-unrolling)
+    - [Resultados (Loop Unrolling & CSE)](#resultados-loop-unrolling--cse)
+* [Melhor otimização encontrada](#melhor-otimização-encontrada)
 
 ## Integrantes do grupo
 
@@ -62,7 +72,7 @@ $ sudo apt install linux-tools-common linux-tools-generic linux-tools-$(uname -r
 ```
 
 ## Fazendo o profiling do FFmpeg em seu estado original
-### perf stat -o
+## perf stat -o
 
 - Para fazer um profiling mais rápido e generalista:
 
@@ -224,11 +234,11 @@ $ kcachegrind callgrind.out.82686
 
 - E assim como nos resultados mostrados pelo `perf`, notamos que as duas funções de maior *overhead* são `search_for_quantizers_twoloop` e `quantize_and_encode_band_cost_UPAIR`.
 
-## Tentativas de Otimização
+# Tentativas de Otimização
 
 Tentamos uma série de abordagens para a melhoria do desemepenho do programa que se mostraram frustradas ou pouco eficientes, vamos listar algumas delas e falar sobre aquela que foi mais bem sucedida na diminuição da quantidade de ciclos utilizados na execução do programa.
 
-### Zerando registradores
+## Zerando registradores
 
 Um artigo chamada "The Surprising Subtleties of Zeroing a Register" nos deu a ideia de tentarmos zerar os registradores de um modo diferente (https://randomascii.wordpress.com/2012/12/29/the-surprising-subtleties-of-zeroing-a-register/).
 
@@ -293,7 +303,7 @@ $ cat zeroing_perf.txt
 
 ```
 
-### Loop Unrolling e Common Subexpression Elimination
+## Loop Unrolling e Common Subexpression Elimination
 
 O **Loop Unrolling** visa reduzir a quantidade de loops, assim reduzindo a quantidade de *branchings* e de possíveis *branch penalties*. É uma técnica que pode ser muito eficiente se utilizada da forma correta. É uma técnica que troca a complexidade de espaço pela complexidade, visto que o código torna-se maior e mais "verboso", porém com desempenho mais otimizado.
 
@@ -303,7 +313,7 @@ Embora as duas técnicas sejam extremamente poderosas quando **bem empregadas** 
 
 Tentamos duas abordagens:
 
-#### CSE
+### CSE
 
 * Na aplicação do **CSE** notamos que em loops é comum que o código faça repetidos acessos às mesmas posições de memória:
 
@@ -336,7 +346,7 @@ Tentamos duas abordagens:
 ```
 - Tentamos mover estas posições para o registrador. Contudo, chegamos à conclusão de que não seria de muita utilidade, visto que, provavelmente, estes valores já seriam levados à memória cache, devido à **localidade temporal**.
 
-#### Loop Unrolling
+### Loop Unrolling
 
 * Notamos que a expressão `rep stosq` era utilizada algumas vezes no código, que é uma instrução onde:
   - Para `ecx` repetição, guarda o conteúdo de `eax` no espaço para onde `edi` aponta, incrementando/decrementado `edi` posições a cada escrita.
@@ -363,7 +373,7 @@ jnz .loop_unroll_start
 (...)
 ```
 
-#### Resultados
+### Resultados (Loop Unrolling & CSE)
 
 Por fim, estas duas otimizações não se mostraram tão eficazes. Contudo, é preciso ressaltar a ressalva que fizemos, esta é uma otimização que, dentro do contexto correto e quando devidamente empregada, dá bons resultados, mas devido à complexidadade do FFmpeg e por restrições de tempo, não fomos capazes de realizá-la satisfatoriamente. Obtivemos apenas uma pequena melhoria:
 
@@ -394,7 +404,7 @@ $ cat loopunrolling_perf.txt
        0,004049000 seconds sys
 ```
 
-## Melhor otimização encontrada
+# Melhor otimização encontrada
 
 A melhor otimização que conseguimos fazer foi na função `quantize_and_encode_band_cost_template`, que é instanciada diversas vezes como `quantize_and_encode_band_cost_SPAIR`, `quantize_and_encode_band_cost_SQUAD`, `quantize_and_encode_band_cost_UQUAD` e `quantize_and_encode_band_cost_ESC` e em outras funções que utilizam a **multiplicação por inteiros**.
 
