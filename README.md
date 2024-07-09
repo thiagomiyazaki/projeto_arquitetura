@@ -607,8 +607,12 @@ Os resultados dos 50 profilings executados **após a modificação** estão na p
 ### Cálculo da melhoria de desempenho
 <br>
 
-$$\Delta{Ciclos} = 566985795.22 - 432797258.46=134188536,76 \newline
-\text{\%Melhoria}= \frac{\Delta{Ciclos}}{\text{Contagem Ciclos Run S/Modificações}}\times 100 = \frac{134188536,76}{566985795.22} \times 100 = 23,667001518\%$$
+$$\Delta{Ciclos} = 566985795.22 - 432797258.46=134188536,76$$ 
+
+<br>
+
+$$\text{\%Melhoria}= \frac{\Delta{Ciclos}}{\text{Contagem Ciclos Run S/Modificações}}\times 100 = \frac{134188536,76}{566985795.22} \times 100 = 23,667001518\% $$
+
 Logo, podemos concluir que houve uma **melhoria de aproximadamente 23,6%** no desempenho do programa.
 
 ## Descrição dos arquivos do repositório
