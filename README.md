@@ -27,7 +27,7 @@
 
 ## Integrantes do grupo
 
-Gabriel Silva Ferreira - RA: 123123456 <br>
+Gabriel Silva Ferreira - RA: 221153871 <br>
 Thiago Inouye Miyazaki - RA: 221150196
 
 ## Sobre o FFmpeg
