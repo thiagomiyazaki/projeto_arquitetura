@@ -19,6 +19,11 @@
     - [Loop Unrolling](#loop-unrolling)
     - [Resultados (Loop Unrolling & CSE)](#resultados-loop-unrolling--cse)
 * [Melhor otimização encontrada](#melhor-otimização-encontrada)
+* [Execução em massa automatizada e média do tempo de execução](#execução-em-massa-automatizada-e-média-do-tempo-de-execução)
+  - [Média da execução antes da modificação](#média-da-execução-antes-da-modificação)
+  - [Média da execução após a modificação](#média-da-execução-após-a-modificação)
+  - [Cálculo da melhoria de desempenho](#cálculo-da-melhoria-de-desempenho)
+* [Descrição dos arquivos do repositório](#descrição-dos-arquivos-do-repositório)
 
 ## Integrantes do grupo
 
@@ -544,3 +549,74 @@ Tweaked Run (com otimização na multiplicação por inteiros não-negativos):
 ```
 
 * Em seguida, precisamos fazer testes em massa para confirmar que, de fato, a otimização trouxe resultados concretos e estatisticamente confiáveis.
+
+## Execução em massa automatizada e média do tempo de execução
+
+Para a confirmação dos resultados foi criado um script em Python que executa o profiling em massa, o `mass_exec.py`. <br>
+Antes de executar o script, é preciso setar algumas variáveis de ambiente:
+
+```bash
+# o caminho absoluto onde está o source code do ffmpeg (para encontrar o executavel)
+export FFMPEG_BASE_FOLDER=/absolute/path/to/ffmpeg/base/folder
+
+# o perf exige senha do sudo para fazer o profiling
+export SUDO_PWD=sudo_pwd
+
+# o caminho absoluto para o arquivo wave a ser convertido
+export FILENAME_TO_CONVERT=/absolute/path/to/file/to/convert/convert_me.wav
+
+# o caminho absoluto para o arquivo aac a ser gerado
+export OUTPUT_FILE=/absolute/path/to/file/to/new/converted/file/converted.aac
+
+# quantidade de execuções do profiling
+export TEST_SIZE=50
+```
+
+O que o script faz?
+* Cria o diretório para armazenar os resultados dos testes
+* Executa o profiling uma certa quantidade de vezes, definida pela variável de ambiente `TEST_SIZE`.
+  - A cada profiling um novo arquivo de texto é gerado com as métricas da execução realizada.
+  - Após o profiling, o arquivo de áudio gerado deve ser deletado.
+* Depois da execução dos profilings, a pasta gerada é escaneada e todos os arquivos são lidos.
+  - A linha de contagem de ciclos é capturada via expressão regular e a quantidade de ciclos de cada arquivo é inserida numa lista.
+* É calculada a média da quantidade de ciclos.
+
+### Média da execução antes da modificação
+
+Para **50 execuções**:
+```bash
+[570007657, 561769440, 571979919, 559966121, 573515034, 576414919, 556466847, 571993156, 562830311, 586548460, 558634804, 557388819, 572057289, 562701417, 567002035, 570986273, 570648771, 564651197, 567418550, 566457680, 567402818, 567793333, 571870918, 565987014, 562873970, 566907814, 565492801, 563244414, 570806122, 556498924, 565520698, 600024905, 555825486, 564393251, 563771654, 559525893, 558522866, 583189423, 579302957, 565277152, 560327778, 568553921, 561539503, 559306335, 562618184, 577503284, 563058017, 560186190, 559981567, 572543870]
+
+A média é 566985795.22
+```
+
+Os resultados dos 50 profilings executados **antes da modificação** estão na pasta **prof_results_vanilla**. 
+
+### Média da execução após a modificação
+
+Para **50 execuções**:
+
+```bash
+[422668090, 429140176, 428577060, 429766956, 427460577, 432085904, 452854008, 431949460, 437118171, 430021238, 425372118, 427000694, 429288962, 424731798, 439092237, 424437455, 434853670, 426664983, 434131934, 426460430, 429473498, 432833915, 429537731, 434063887, 431822353, 434189258, 424479006, 431169661, 437413099, 434623662, 427028753, 456103579, 429922389, 439654920, 428061438, 434192058, 470884080, 426820229, 461261953, 427116269, 437953340, 427151763, 431595615, 425448378, 434203999, 429052520, 430366434, 431183721, 423282042, 435297452]
+
+A média é 432797258.46
+```
+
+Os resultados dos 50 profilings executados **após a modificação** estão na pasta **prof_results_tweaked**
+
+### Cálculo da melhoria de desempenho
+<br>
+
+$$\Delta{Ciclos} = 566985795.22 - 432797258.46=134188536,76$$
+$$\text{\%Melhoria}= \frac{\Delta{Ciclos}}{\text{Contagem Ciclos Run S/Modificações}}\times 100 = \frac{134188536,76}{566985795.22} \times 100 = 23,667001518\% $$
+
+Logo, podemos concluir que houve uma **melhoria de aproximadamente 23,6%** no desempenho do programa.
+
+## Descrição dos arquivos do repositório
+
+- **prof_results_tweaked**: é o diretório que contém o output do profiling executado "em massa" **após a modificação**.
+- **prof_results_vanilla**: é o diretório que contém o output do profiling executado "em massa" **antes da modificação**.
+- **aaccoder_tweaked.c**: código modificado do módulo libavcodec/aaccoder.c - modificações com o objetivo de otimizar a execução do programa.
+- **mass_exec.py**: script em python para fazer a execução em massa do programa - note é preciso executar o script antes da modificação e depois da modificação.
+- **requirements.txt**: output do comando `pip freeze` - na verdade a única dependência é o numpy, usado para calcular a média, então basta simplesmente instalar o numpy (`pip install numpy`).
+

@@ -1,0 +1,25 @@
+# started on Tue Jul  9 17:15:58 2024
+
+
+ Performance counter stats for '/home/thiagomi/Documents/Arquitetura/new/FFmpeg-master/ffmpeg_g -i /home/thiagomi/Documents/Arquitetura/new/FFmpeg-master/arquivos/OAF_back_happy.wav -c:a aac -b:a 192k /home/thiagomi/Documents/Arquitetura/new/FFmpeg-master/arquivos/output.aac':
+
+            129,70 msec task-clock                #    1,020 CPUs utilized          
+               147      context-switches          #    1,133 K/sec                  
+                19      cpu-migrations            #  146,493 /sec                   
+             1.093      page-faults               #    8,427 K/sec                  
+       570.007.657      cycles                    #    4,395 GHz                    
+     1.542.298.630      instructions              #    2,71  insn per cycle         
+       133.133.138      branches                  #    1,026 G/sec                  
+         1.342.824      branch-misses             #    1,01% of all branches        
+     2.794.532.470      slots                     #   21,546 G/sec                  
+     1.547.193.314      topdown-retiring          #     55,2% retiring              
+       266.018.405      topdown-bad-spec          #      9,5% bad speculation       
+       234.587.177      topdown-fe-bound          #      8,4% frontend bound        
+       755.163.006      topdown-be-bound          #     26,9% backend bound         
+
+       0,127170056 seconds time elapsed
+
+       0,133026000 seconds user
+       0,000000000 seconds sys
+
+
