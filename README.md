@@ -83,7 +83,7 @@ $ sudo apt install linux-tools-common linux-tools-generic linux-tools-$(uname -r
 - Para fazer um profiling mais rápido e generalista:
 
 ```bash
-$ sudo perf stat -o tweaked_perf.txt -- ./ffmpeg_g -i arquivos/OAF_back_happy.wav -c:a aac -b:a 192k arquivos/output.aac
+$ sudo perf stat -o tweaked_perf.txt -- ./ffmpeg_g -i path/to/file.wav -c:a aac -b:a 192k path/to/new_file.aac
 ```
 
 - Ao rodar o `perf stat -o` geramos um arquivo como este:
@@ -121,7 +121,7 @@ $ sudo perf stat -o tweaked_perf.txt -- ./ffmpeg_g -i arquivos/OAF_back_happy.wa
 
 - Para obter um profiling mais detalhado com o `perf`:
 ```bash
-$ sudo perf record ./ffmpeg_g -i arquivos/OAF_back_happy.wav -c:a aac -b:a 192k arquivos/output.aac
+$ sudo perf record ./ffmpeg_g -i path/to/file.wav -c:a aac -b:a 192k path/to/new_file.aac
 $ sudo perf report > report_vanilla_example.txt
 ```
 
@@ -163,13 +163,13 @@ $ cat report_vanilla_example.txt
 "
 ```
 - Note que as duas funções que levaram mais tempo são `search_for_quantizers_twoloop` e `quantize_and_encode_band_cost_UPAIR`.
-- **Vamos começar a nossa investigação com estas duas funções.**
+- **Vamos começar a nossa investigação por estas duas funções.**
 
 
 ## Profiling com valgrind
 
 - A primeira ferramenta que tentamos usar, na verdade, foi a ferramenta **Callgrind** do **Valgrind**
-- É uma ferramenta bastante interessante e que fornece riqueza de informações, mas apresenta mais informações do que desejamos, e para questões de parsing de execuções em massa, o `perf` mostrou-se mais prático.
+- É uma ferramenta bastante interessante e que fornece muitas informações, talvez mais informações do que precisávamos, e por questões de parsing dos relatórios em execuções em massa, o `perf` mostrou-se mais prático.
 - Contudo achamos válido comentar sobre a ferramenta, e além disso, ela serviu para cruzarmos as informações obtidas pelo `perf`, facilitando a interpretação dos resultados.
 
 ```bash
@@ -177,7 +177,7 @@ $ cat report_vanilla_example.txt
 $ valgrind --tool==callgrind ./ffmpeg_78g -i arquivos/OAF_back_happy.wav -c:a aac -b:a 192k arquivos/output.aac
 ```
 
-- A execução do comando acima vai gerar um arquivo chamado `callgrind.out.<pid>`, onde <pid> é o número do processo gerado pelo programa.
+- A execução do comando acima vai gerar um arquivo chamado `callgrind.out.<pid>`, onde `<pid>` é o número do processo gerado pelo programa.
 - Este arquivo pode ser acessado e interpretado **via CLI**:
 
 ```bash
@@ -222,7 +222,7 @@ Ir             file:function
 ...
 ```
 - Note que os números mostrados acima não indicam ciclos, mas instruções removidas.
-- Mas também pode ser visualizado via interface gráfica, usando o programa `kcachegrind`:
+- Também podemos visualizar os resultados através de uma interface gráfica, usando o programa `kcachegrind`:
 
 ```
 $ sudo apt update
@@ -232,7 +232,7 @@ $ kcachegrind callgrind.out.82686
 
 ![alt text](image-2.png)
 
-- O interessante é que esta visualização nos dá uma noção da quantidade de tempo gasta em cada função, e também nos dá a capacidade de discernir a diferença entre a quantidade de tempo que uma função gasta porque ela **chama outras funções**, e a quantidade de tempo que uma função gasta **executando suas próprias instruções**.
+- O interessante é que esta visualização nos dá uma noção da quantidade de tempo gasta em cada função, e também nos dá a capacidade de discernir a diferença entre a quantidade de tempo que uma função gasta **porque ela chama outras funções**, e a quantidade de tempo que uma função gasta **executando suas próprias instruções**.
 - Esta distinção é importante, porque como podemos ver na imagem acima, embora funções como `encoder_thread` e `frame_encode` apareçam com valores altos, na verdade muito do processamento é gasto em outras funções que são chamadas por elas. Logo, é interessante nos concentrarmos na coluna `self` da tabela mostrada pelo `kcachegrind`.
 - Podemos alterar a ordem de exibição dos itens na tabela e teremos o seguinte:
 
@@ -246,7 +246,7 @@ Tentamos uma série de abordagens para a melhoria do desemepenho do programa que
 
 ## Zerando registradores
 
-Um artigo chamada "The Surprising Subtleties of Zeroing a Register" nos deu a ideia de tentarmos zerar os registradores de um modo diferente (https://randomascii.wordpress.com/2012/12/29/the-surprising-subtleties-of-zeroing-a-register/).
+Um artigo chamado "The Surprising Subtleties of Zeroing a Register" nos deu a ideia de tentarmos zerar os registradores de um modo diferente (https://randomascii.wordpress.com/2012/12/29/the-surprising-subtleties-of-zeroing-a-register/).
 
 Ao gerarmos o código em x86-64 AT&T Assembly do módulo `aaccoder.c`:
 ```bash
@@ -315,7 +315,7 @@ O **Loop Unrolling** visa reduzir a quantidade de loops, assim reduzindo a quant
 
 O **Common Subexpression Elimination** é uma técnica que visa eliminar cálculos redundantes, reutilizando valores já calculados ou valores que já foram trazidos da memória, por exemplo, para que acessos desnecessários à memória não sejam feitos.
 
-Embora as duas técnicas sejam extremamente poderosas quando **bem empregadas** dentro do escopo do trabalho e do tempo fornecido não fomos capazes de executar grandes otimizações com estas técnicas. Um dos motivos principais é a complexidade do código do FFmpeg, que lida com cálculos complexos e funções de tamanho gigantesco para efeutar os cálculos - tornando muito difícil localizar as dependências, o que por sua vez torna difícil fazer modificações sem quebrar o código.
+Embora as duas técnicas sejam extremamente eficientes quando **bem empregadas**, dentro do escopo do trabalho e do tempo fornecido não fomos capazes de executar grandes otimizações com estas técnicas. Um dos motivos principais é a complexidade do código do FFmpeg, que lida com cálculos complexos e funções de tamanho gigantesco para efetuar os cálculos - tornando muito difícil localizar as dependências, que por sua vez torna difícil fazer modificações sem quebrar o código.
 
 Tentamos duas abordagens:
 
@@ -350,13 +350,13 @@ Tentamos duas abordagens:
 	cmpl	-156(%rbp), %eax
 	jg	.L538
 ```
-- Tentamos mover estas posições para o registrador. Contudo, chegamos à conclusão de que não seria de muita utilidade, visto que, provavelmente, estes valores já seriam levados à memória cache, devido à **localidade temporal**.
+- Tentamos mover estas posições para registradores, para que o processador pudesse acessar estes valores mais rapidamente, prescindindo de acessos à memória. Contudo, não houve melhoria notável nos testes. E chegamos à conclusão de que estes valores já seriam levados à memória cache, devido à **localidade temporal**, resultando em ganhos de desempenho muito pequenos.
 
 ### Loop Unrolling
 
 * Notamos que a expressão `rep stosq` era utilizada algumas vezes no código, que é uma instrução onde:
-  - Para `ecx` repetição, guarda o conteúdo de `eax` no espaço para onde `edi` aponta, incrementando/decrementado `edi` posições a cada escrita.
-  - Ou seja, faz repetidos acessos à posições relativamente contíguas na memória.
+  - Para `ecx` repetições, escreve o conteúdo de `eax` no espaço para onde `edi` aponta, incrementando/decrementado `edi` posições a cada escrita.
+  - Ou seja, faz repetidas escritas em posições relativamente contíguas na memória.
 
 * Então, em alguns trechos trocamos:
 ```asm
@@ -381,7 +381,7 @@ jnz .loop_unroll_start
 
 ### Resultados (Loop Unrolling & CSE)
 
-Por fim, estas duas otimizações não se mostraram tão eficazes. Contudo, é preciso ressaltar a ressalva que fizemos, esta é uma otimização que, dentro do contexto correto e quando devidamente empregada, dá bons resultados, mas devido à complexidadade do FFmpeg e por restrições de tempo, não fomos capazes de realizá-la satisfatoriamente. Obtivemos apenas uma pequena melhoria:
+Por fim, estas duas otimizações não se mostraram tão eficazes. Contudo, é preciso ressaltar a ressalva que fizemos, estas são otimizações que, dentro do contexto correto e quando devidamente empregadas, fornecem bons resultados, mas devido à complexidadade do FFmpeg e por restrições de tempo, não fomos capazes de realizá-las satisfatoriamente. Obtivemos apenas uma pequena melhoria:
 
 ```bash
 $ cat loopunrolling_perf.txt 
@@ -414,7 +414,7 @@ $ cat loopunrolling_perf.txt
 
 A melhor otimização que conseguimos fazer foi na função `quantize_and_encode_band_cost_template`, que é instanciada diversas vezes como `quantize_and_encode_band_cost_SPAIR`, `quantize_and_encode_band_cost_SQUAD`, `quantize_and_encode_band_cost_UQUAD` e `quantize_and_encode_band_cost_ESC` e em outras funções que utilizam a **multiplicação por inteiros**.
 
-Através de uma função que utiliza *assembly inline* para efetuar a **multiplicação por inteiros não negativos**:
+A otimização foi feita através de uma função que utiliza *assembly inline* para efetuar a **multiplicação por inteiros não negativos**:
 
 ```c
 int multiply(int a, int b) {
@@ -448,7 +448,7 @@ int multiply(int a, int b) {
 }
 ```
 
-Como a função apenas funciona para o cálculo de inteiro não-negativos, vamos utilizar apenas para calcular índices, em linhas de código como:
+Como a função é adequada apenas para o cálculo de inteiros não-negativos, utilizamos apenas para calcular índices, em linhas de código como:
 
 ```C
 vec     = &ff_aac_codebook_vectors[cb-1][curidx*dim];
@@ -456,19 +456,21 @@ if (ff_aac_codebook_vectors[cb-1][curidx*dim+j] != 0.0f)
 curidx *= aac_cb_range[cb];
 ```
 
-- Note que nestas linhas de código a multiplicação é utilizada para o cálculo de índices, o que não envolve números negativos.
+- Note que nestas linhas de código a multiplicação é utilizada para o cálculo de índices, e não envolve números negativos.
 
 - Então, onde multiplicações como estas eram feitas, trocamos a multiplicação pela função `multiply()`:
+
 ```C
 curidx = multiply(aac_cb_range[cb], curidx);
 ```
-* São multiplicações presentes dentro de **nested loops**. Como são funções que trabalham sobre frames/windows/samples de arquivos de áudio, devem ser processadas para cada unidade de amostragem, logo são funções que podem são chamadas milhares de vezes, mesmo para arquivos de áudio pequenos.
+
+* São multiplicações presentes dentro de **nested loops**. E como são funções que trabalham sobre frames/windows/samples de arquivos de áudio, devem ser processadas para cada unidade de amostragem, logo são funções que podem são chamadas milhares de vezes, mesmo para arquivos de áudio pequenos.
   - Ou seja, são funções críticas para o desempenho do programa.
   - Para corroborar com esta análise, o profiling demonstrou que grande parte do processamento é gasto nestas funções.
 
-* Para implementar as mudanças, foi modificado o arquivo `aaccoder.c` em todas as multiplicações por inteiro possíveis, e o programa foi recompilado e montado:
+* Para implementar as mudanças, foi modificado o arquivo `aaccoder.c` em todas as multiplicações por inteiro possíveis, e então o programa foi recompilado e montado:
 
-```
+```bash
 $ rm ffmpeg_g
 $ rm libavcodec/aaccoder.o
 $ make
@@ -507,7 +509,7 @@ $ cat multiply_mod_perf.txt
        0,004260000 seconds sys
 ```
 
-* Fazendo o profile com informações mais detalhadas:
+* Fazendo o profiling com informações mais detalhadas:
 ```bash
 $ sudo perf report > multiply_mod_detailed_perf.txt
 $ cat multiply_mod_detailed_perf.txt 
@@ -539,7 +541,6 @@ $ cat multiply_mod_detailed_perf.txt
 
 * Notamos a aparição da função que criamos, `multiply()`, indicando que está sendo utilizada muitas vezes. Contudo, percebe-se um decréscimo notável na quantidade de ciclos por execução. Dando fortes indícios de que esta otimização possui resultados mais relevantes que as anteriores.
 
-
 ```bash
 Vanilla Run (sem otimização):
     557.024.381      cycles
@@ -556,7 +557,7 @@ Para a confirmação dos resultados foi criado um script em Python que executa o
 Antes de executar o script, é preciso setar algumas variáveis de ambiente:
 
 ```bash
-# o caminho absoluto onde está o source code do ffmpeg (para encontrar o executavel)
+# o caminho absoluto para o diretório onde está o source code do ffmpeg
 export FFMPEG_BASE_FOLDER=/absolute/path/to/ffmpeg/base/folder
 
 # o perf exige senha do sudo para fazer o profiling
@@ -620,6 +621,6 @@ Logo, podemos concluir que houve uma **melhoria de aproximadamente 23,6%** no de
 - **prof_results_tweaked**: é o diretório que contém o output do profiling executado "em massa" **após a modificação**.
 - **prof_results_vanilla**: é o diretório que contém o output do profiling executado "em massa" **antes da modificação**.
 - **aaccoder_tweaked.c**: código modificado do módulo libavcodec/aaccoder.c - modificações com o objetivo de otimizar a execução do programa.
-- **mass_exec.py**: script em python para fazer a execução em massa do programa - note é preciso executar o script antes da modificação e depois da modificação.
-- **requirements.txt**: output do comando `pip freeze` - na verdade a única dependência é o numpy, usado para calcular a média, então basta simplesmente instalar o numpy (`pip install numpy`).
+- **mass_exec.py**: script em python para fazer a execução em massa do programa - note que é preciso executar o script antes da modificação e depois da modificação.
+- **requirements.txt**: output do comando `pip freeze` - na verdade, a única dependência é o numpy, usado para calcular a média, então bastaria simplesmente instalar o numpy (`pip install numpy`).
 
