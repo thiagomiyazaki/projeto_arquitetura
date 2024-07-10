@@ -27,7 +27,7 @@
 
 ## Integrantes do grupo
 
-Gabriel Silva Ferreira - RA: 221153871 <br>
+Gabriel Freitas Carucce - RA: 221153871 <br>
 Thiago Inouye Miyazaki - RA: 221150196
 
 ## Sobre o FFmpeg
@@ -38,9 +38,9 @@ O FFmpeg é amplamente utilizado no meio audiovisual para fazer transcoding, edi
 Além disso, o FFmpeg é um aplicativo gratuito e open-source.
 
 ## Escopo do projeto
-O FFmpeg é um aplicativo muito grande e complexo, sendo que decidimos nos concentrar em tentar otimizar alguma função que faz parte do processo de conversão de áudio para o formato .aac. Os testes de desempenho foram feitos sob o cenário em que o usuário deseja fazer a conversão de um arquivo .wav (WAVE) para aac.<br>
+O FFmpeg é um aplicativo muito grande e complexo, e por isso decidimos nos concentrar em tentar otimizar alguma função que faz parte do processo de conversão de áudio para o formato .aac. Os testes de desempenho foram feitos sob o cenário em que o usuário deseja fazer a conversão de um arquivo .wav (WAVE) para aac.<br>
 
-O WAVE é um formato lossless e sem compressão, enquanto o AAC (Advanced Audio Coding) é um formato lossy e com compressão, que, embora tenha sido menos utilizado hoje em dia, foi muito importante e amplamente utilizados em diversas plataformas como iPhone, iPod, iPad, Nintendo DSi, Nintendo 3DS, Apple Music, iTunes, DivX Plus Web Player, PlayStation 4 e frequentemente como o formato de áudio do codec de vídeo H264. Dado um mesmo valor de bit rate, o AAC é conhecido por fornecer uma maior qualidade de áudio em comparação ao MP3.
+O WAVE é um formato lossless e sem compressão, e o AAC (Advanced Audio Coding) é um formato lossy e com compressão, que, embora tenha sido menos utilizado hoje em dia, foi amplamente utilizado em diversas plataformas como iPhone, iPod, iPad, Nintendo DSi, Nintendo 3DS, Apple Music, iTunes, DivX Plus Web Player, PlayStation 4 e frequentemente como o formato de áudio do codec de vídeo H264. Dado um mesmo valor de bit rate, o AAC é conhecido por fornecer uma maior qualidade de áudio em comparação ao MP3.
 
 ## Ferramentas utilizadas
 
@@ -66,7 +66,7 @@ $ ./configure --disable-optimizations --enable-debug=3 --enable-linux-perf
 $ make -j2
 ```
 
-- Sem estas flags o debugging fica comprometido pois não é possível enxergar o nome das funções que estão sendo executadas, perdendo a utilidade do debugging.
+- Sem estas flags o profiling fica comprometido pois não é possível enxergar o nome das funções que estão sendo executadas, dificultando a análise dos relatórios dos **profilers**.
 
 ## Download da ferramenta perf e do valgrind
 
