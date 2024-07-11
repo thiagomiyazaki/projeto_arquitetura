@@ -624,3 +624,6 @@ Logo, podemos concluir que houve uma **melhoria de aproximadamente 23,6%** no de
 - **mass_exec.py**: script em python para fazer a execução em massa do programa - note que é preciso executar o script antes da modificação e depois da modificação.
 - **requirements.txt**: output do comando `pip freeze` - na verdade, a única dependência é o numpy, usado para calcular a média, então bastaria simplesmente instalar o numpy (`pip install numpy`).
 
+## Conclusão 
+
+Este projeto enfatiza a necessidade de um processo contínuo de profiling e ajuste de otimizações. Vê-se que, técnicas promissoras teoricamente, podem não oferecer melhorias práticas significativas, enquanto outras, talvez menos óbvias, podem resultar em ganhos substanciais. A eficiência da otimização depende fortemente do contexto do código, reforçando a importância de uma abordagem adaptativa e informada para a otimização de desempenho. De qualquer forma, é atingida uma melhora considerável no desempenho de um programa através de uma pequena modificação, sustentando a utilidade de aprimorar as implementações da funções em Linguagem Montadora.
