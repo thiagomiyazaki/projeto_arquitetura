@@ -622,6 +622,7 @@ Logo, podemos concluir que houve uma **melhoria de aproximadamente 23,6%** no de
 - **prof_results_tweaked**: é o diretório que contém o output do profiling executado "em massa" **após a modificação**.
 - **prof_results_vanilla**: é o diretório que contém o output do profiling executado "em massa" **antes da modificação**.
 - **aaccoder_tweaked.c**: código modificado do módulo libavcodec/aaccoder.c - modificações com o objetivo de otimizar a execução do programa.
+- **aaccoder_original.c**: código original do módulo libavcodec/aaccoder.c.
 - **mass_exec.py**: script em python para fazer a execução em massa do programa - note que é preciso executar o script antes da modificação e depois da modificação.
 - **requirements.txt**: output do comando `pip freeze` - na verdade, a única dependência é o numpy, usado para calcular a média, então bastaria simplesmente instalar o numpy (`pip install numpy`).
 
