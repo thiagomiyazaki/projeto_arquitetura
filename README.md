@@ -24,6 +24,7 @@
   - [Média da execução após a modificação](#média-da-execução-após-a-modificação)
   - [Cálculo da melhoria de desempenho](#cálculo-da-melhoria-de-desempenho)
 * [Descrição dos arquivos do repositório](#descrição-dos-arquivos-do-repositório)
+* [Conclusão](#conclusao)
 
 ## Integrantes do grupo
 
@@ -626,4 +627,4 @@ Logo, podemos concluir que houve uma **melhoria de aproximadamente 23,6%** no de
 
 ## Conclusão 
 
-Este projeto enfatiza a necessidade de um processo contínuo de profiling e ajuste de otimizações. Vê-se que, técnicas promissoras teoricamente, podem não oferecer melhorias práticas significativas, enquanto outras, talvez menos óbvias, podem resultar em ganhos substanciais. A eficiência da otimização depende fortemente do contexto do código, reforçando a importância de uma abordagem adaptativa e informada para a otimização de desempenho. De qualquer forma, é atingida uma melhora considerável no desempenho de um programa através de uma pequena modificação, sustentando a utilidade de aprimorar as implementações da funções em Linguagem Montadora.
+Por fim, ressaltamos que o projeto enfatiza a necessidade de um processo contínuo de profiling e ajuste de otimizações. Vê-se que, técnicas promissoras teoricamente, podem não oferecer melhorias práticas significativas, enquanto outras, talvez menos óbvias, podem resultar em ganhos substanciais. A eficiência da otimização depende fortemente do contexto do código, o que reforça a importância de uma abordagem adaptativa e informada para a otimização de desempenho. De qualquer forma, é atingida uma melhora considerável no desempenho de um programa através de uma pequena modificação, sustentando a utilidade de aprimorar as implementações da funções em Linguagem Montadora. Dessa forma, empregar esse processo de maneira adequada e em proporções mais generalistas pode alavancar fortemente a performance de uma aplicação.
